@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use App\Http\Resources\TicketResource;
 
 class TicketController extends Controller
 {
@@ -27,6 +28,9 @@ class TicketController extends Controller
     {
         // TODO: Get paginated collection of Ticket models.
         // https://laravel.com/docs/5.8/pagination#paginating-query-builder-results
+        $tickets = Ticket::when($request->has('filter.plaque_id'), function($query) use ($request){
+            $query->where('plaque_id', '=', $request->input('filter.plaque_id'));
+        })->paginate();
 
         // TODO: If "filter[plaque_id]" provided, then filter by the plaque_id.
         // https://laravel.com/docs/5.8/requests#retrieving-input
@@ -34,6 +38,7 @@ class TicketController extends Controller
 
         // TODO: Return a JSON response of the paginated set.
         // https://laravel.com/docs/5.8/eloquent-resources#pagination
+        return TicketResource::collection($tickets);
     }
 
 

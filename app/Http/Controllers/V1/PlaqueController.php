@@ -72,7 +72,7 @@ class PlaqueController extends Controller
          }
         // TODO: Return a JSON response of the Plaque.
         // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
-        return new Plaque($plaques);
+        return new PlaqueResource($plaques);
     }
 
     /**

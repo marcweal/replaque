@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Set needed permissions.
+chown -R www-data: /var/www/html/bootstrap/cache
+chown -R www-data: /var/www/html/storage
+
 # Run migrations.
 php /var/www/html/artisan migrate:fresh --force --seed
 

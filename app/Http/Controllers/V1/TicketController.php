@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
-use App\Http\Resources\TicketResource;
 
 class TicketController extends Controller
 {
@@ -22,22 +22,16 @@ class TicketController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index(Request $request)
     {
-        // TODO: Get paginated collection of Ticket models.
-        // https://laravel.com/docs/5.8/pagination#paginating-query-builder-results
-        $tickets = Ticket::when($request->has('filter.plaque_id'), function($query) use ($request){
-            $query->where('plaque_id', '=', $request->input('filter.plaque_id'));
-        })->paginate();
+        $tickets = Ticket::query()
+            ->when($request->has('filter.plaque_id'), function ($query) use ($request) {
+                $query->where('plaque_id', '=', $request->input('filter.plaque_id'));
+            })
+            ->paginate();
 
-        // TODO: If "filter[plaque_id]" provided, then filter by the plaque_id.
-        // https://laravel.com/docs/5.8/requests#retrieving-input
-        // https://laravel.com/docs/5.8/queries#where-clauses
-
-        // TODO: Return a JSON response of the paginated set.
-        // https://laravel.com/docs/5.8/eloquent-resources#pagination
         return TicketResource::collection($tickets);
     }
 
@@ -46,18 +40,23 @@ class TicketController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\TicketResource
      */
     public function store(Request $request)
     {
-        // TODO: Validate the request
-        // https://laravel.com/docs/5.8/validation#quick-writing-the-validation-logic
+        $request->validate([
+            'plaque_id' => ['required', 'exists:plaques,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+        ]);
 
-        // TODO: Store the Ticket record in the database.
-        // https://laravel.com/docs/5.8/eloquent#inserting-and-updating-models
+        $ticket = Ticket::create([
+            'plaque_id' => $request->plaque_id,
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
 
-        // TODO: Return a JSON response of the Ticket.
-        // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
+        return new TicketResource($ticket);
     }
 
     /**
@@ -65,12 +64,11 @@ class TicketController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Ticket $ticket
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\TicketResource
      */
     public function show(Request $request, Ticket $ticket)
     {
-        // TODO: Return a JSON response of the Ticket.
-        // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
+        return new TicketResource($ticket);
     }
 
     /**
@@ -78,18 +76,23 @@ class TicketController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Ticket $ticket
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\TicketResource
      */
     public function update(Request $request, Ticket $ticket)
     {
-        // TODO: Validate the request.
-        // https://laravel.com/docs/5.8/validation#quick-writing-the-validation-logic
+        $request->validate([
+            'plaque_id' => ['required', 'exists:plaques,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+        ]);
 
-        // TODO: Update the Ticket record in the database.
-        // https://laravel.com/docs/5.8/eloquent#inserting-and-updating-models
+        $ticket->update([
+            'plaque_id' => $request->has('plaque_id') ? $request->plaque_id : $ticket->plaque_id,
+            'name' => $request->has('name') ? $request->name : $ticket->name,
+            'description' => $request->has('description') ? $request->description : $ticket->description,
+        ]);
 
-        // TODO: Return a JSON response of the Ticket.
-        // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
+        return new TicketResource($ticket);
     }
 
     /**
@@ -97,14 +100,13 @@ class TicketController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Ticket $ticket
+     * @throws \Exception
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, Ticket $ticket)
     {
-        // TODO: Delete the Ticket record in the database.
-        // https://laravel.com/docs/5.8/eloquent#deleting-models
+        $ticket->delete();
 
-        // TODO: Return a resource deleted JSON response.
-        // https://laravel.com/docs/5.8/responses#json-responses
+        return response()->json(['message' => 'Ticket deleted']);
     }
 }

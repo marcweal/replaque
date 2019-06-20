@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\V1\Ticket;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TicketResource;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 
 class CloseController extends Controller
 {
@@ -18,17 +21,15 @@ class CloseController extends Controller
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Ticket $ticket
+     * @return \App\Http\Resources\TicketResource
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, Ticket $ticket)
     {
-        // TODO: Validate the request.
-        // https://laravel.com/docs/5.8/validation#quick-writing-the-validation-logic
+        $ticket->update([
+            'closed_at' => Date::now(),
+        ]);
 
-        // TODO: Update the Plaque record in the database.
-        // https://laravel.com/docs/5.8/eloquent#inserting-and-updating-models
-
-        // TODO: Return a JSON response of the Plaque.
-        // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
+        return new TicketResource($ticket);
     }
 }

@@ -25,15 +25,11 @@ class PlaqueResource extends JsonResource
             'lat' => $this->lat,
             'lng' => $this->lng,
             'unveiler' => $this->unveiler,
-            'date_unveiled' => $this->date_unveiled,
+            'date_unveiled' => $this->date_unveiled->toDateString(),
             'sponsor' => $this->sponsor,
             'comments' => $this->comments,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            // TODO: Complete rest of fields.
-            // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
-            // TODO: Return dates/datetimes as ISO8601.
-            // https://carbon.nesbot.com/docs/#api-commonformats
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
         ];
     }
 }

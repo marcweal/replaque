@@ -22,16 +22,12 @@ class PlaqueController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index(Request $request)
     {
-        // TODO: Get paginated collection of Plaque models.
-        // https://laravel.com/docs/5.8/pagination#paginating-query-builder-results
         $plaques = Plaque::paginate();
 
-        // TODO: Return a JSON response of the paginated set.
-        // https://laravel.com/docs/5.8/eloquent-resources#pagination
         return PlaqueResource::collection($plaques);
     }
 
@@ -39,40 +35,41 @@ class PlaqueController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\PlaqueResource
      */
     public function store(Request $request)
     {
-        // TODO: Validate the request
-        // https://laravel.com/docs/5.8/validation#quick-writing-the-validation-logic
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'address_line_1' => 'required',
-            'city' => 'required',
-            'postcode' => 'required',
-            'unveiler' => 'required',
-            'date_unveiled' => 'required',
-            'sponsor' => 'required',
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'address_line_1' => ['required', 'string', 'max:255'],
+            'address_line_2' => ['string', 'max:255'],
+            'address_line_3' => ['string', 'max:255'],
+            'city' => ['required', 'string', 'max:255'],
+            'postcode' => ['required', 'string', 'max:255'],
+            'lat' => ['numeric'],
+            'lng' => ['numeric'],
+            'unveiler' => ['required', 'string', 'max:255'],
+            'date_unveiled' => ['required', 'date_format:Y-m-d'],
+            'sponsor' => ['required', 'string', 'max:255'],
+            'comments' => ['string'],
         ]);
 
-        // TODO: Store the Plaque record in the database.
-        // https://laravel.com/docs/5.8/eloquent#inserting-and-updating-models
-        {
-            $plaques = new Plaque;
-    
-            $plaques->name = $request->name;
-            $plaques->address_line_1 = $request->address_line_1;
-            $plaques->city = $request->city;
-            $plaques->postcode = $request->postcode;
-            $plaques->unveiler = $request->unveiler;
-            $plaques->date_unveiled = $request->date_unveiled;
-            $plaques->sponsor = $request->sponsor;
-    
-            $plaques->save();
-         }
-        // TODO: Return a JSON response of the Plaque.
-        // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
-        return new PlaqueResource($plaques);
+        $plaque = Plaque::create([
+            'name' => $request->name,
+            'address_line_1' => $request->address_line_1,
+            'address_line_2' => $request->address_line_2,
+            'address_line_3' => $request->address_line_3,
+            'city' => $request->city,
+            'postcode' => $request->postcode,
+            'lat' => $request->lat,
+            'lng' => $request->lng,
+            'unveiler' => $request->unveiler,
+            'date_unveiled' => $request->date_unveiled,
+            'sponsor' => $request->sponsor,
+            'comments' => $request->comments,
+        ]);
+
+        return new PlaqueResource($plaque);
     }
 
     /**
@@ -80,12 +77,11 @@ class PlaqueController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Plaque $plaque
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\PlaqueResource
      */
     public function show(Request $request, Plaque $plaque)
     {
-        // TODO: Return a JSON response of the Plaque.
-        // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
+        return new PlaqueResource($plaque);
     }
 
     /**
@@ -93,18 +89,41 @@ class PlaqueController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Plaque $plaque
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\PlaqueResource
      */
     public function update(Request $request, Plaque $plaque)
     {
-        // TODO: Validate the request.
-        // https://laravel.com/docs/5.8/validation#quick-writing-the-validation-logic
+        $request->validate([
+            'name' => ['string', 'max:255'],
+            'address_line_1' => ['string', 'max:255'],
+            'address_line_2' => ['string', 'max:255'],
+            'address_line_3' => ['string', 'max:255'],
+            'city' => ['string', 'max:255'],
+            'postcode' => ['string', 'max:255'],
+            'lat' => ['numeric'],
+            'lng' => ['numeric'],
+            'unveiler' => ['string', 'max:255'],
+            'date_unveiled' => ['date_format:Y-m-d'],
+            'sponsor' => ['string', 'max:255'],
+            'comments' => ['string'],
+        ]);
 
-        // TODO: Update the Plaque record in the database.
-        // https://laravel.com/docs/5.8/eloquent#inserting-and-updating-models
+        $plaque->update([
+            'name' => $request->has('name') ? $request->name : $plaque->name,
+            'address_line_1' => $request->has('address_line_1') ? $request->address_line_1 : $plaque->address_line_1,
+            'address_line_2' => $request->has('address_line_2') ? $request->address_line_2 : $plaque->address_line_2,
+            'address_line_3' => $request->has('address_line_3') ? $request->address_line_3 : $plaque->address_line_3,
+            'city' => $request->has('city') ? $request->city : $plaque->city,
+            'postcode' => $request->has('postcode') ? $request->postcode : $plaque->postcode,
+            'lat' => $request->has('lat') ? $request->lat : $plaque->lat,
+            'lng' => $request->has('lng') ? $request->lng : $plaque->lng,
+            'unveiler' => $request->has('unveiler') ? $request->unveiler : $plaque->unveiler,
+            'date_unveiled' => $request->has('date_unveiled') ? $request->date_unveiled : $plaque->date_unveiled,
+            'sponsor' => $request->has('sponsor') ? $request->sponsor : $plaque->sponsor,
+            'comments' => $request->has('comments') ? $request->comments : $plaque->comments,
+        ]);
 
-        // TODO: Return a JSON response of the Plaque.
-        // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
+        return new PlaqueResource($plaque);
     }
 
     /**
@@ -112,17 +131,14 @@ class PlaqueController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Plaque $plaque
+     * @throws \Exception
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, Plaque $plaque)
     {
-        // TODO: Delete the related ticket records in the database.
-        // https://laravel.com/docs/5.8/eloquent-relationships#one-to-many
+        $plaque->tickets()->delete();
+        $plaque->delete();
 
-        // TODO: Delete the Plaque record in the database.
-        // https://laravel.com/docs/5.8/eloquent#deleting-models
-
-        // TODO: Return a resource deleted JSON response.
-        // https://laravel.com/docs/5.8/responses#json-responses
+        return response()->json(['message' => 'Plaque deleted']);
     }
 }

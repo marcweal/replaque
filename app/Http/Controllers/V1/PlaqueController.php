@@ -28,11 +28,11 @@ class PlaqueController extends Controller
     {
         // TODO: Get paginated collection of Plaque models.
         // https://laravel.com/docs/5.8/pagination#paginating-query-builder-results
-        $plaques = DB::table('plaques')->simplePaginate(1);
+        $plaques = Plaque::paginate();
 
         // TODO: Return a JSON response of the paginated set.
         // https://laravel.com/docs/5.8/eloquent-resources#pagination
-        return json_encode($plaques);
+        return PlaqueResource::collection($plaques);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Plaque;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlaqueController extends Controller
 {

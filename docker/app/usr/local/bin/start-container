@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Create the database.
+echo "" > /var/www/html/database/database.sqlite
+
+# Set needed permissions.
+chown www-data: /var/www/html/database/database.sqlite
+chown -R www-data: /var/www/html/bootstrap/cache
+chown -R www-data: /var/www/html/storage
+
 # Run migrations.
 php /var/www/html/artisan migrate:fresh --force --seed
 

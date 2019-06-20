@@ -90,8 +90,6 @@ only need to run the migration to create the tables and then the seeders to
 populate the `plaques` table with the data:
 
 ```bash
-touch database/database.sqlite
-
 ./develop artisan migrate:fresh --seed
 ```
 

@@ -45,12 +45,34 @@ class PlaqueController extends Controller
     {
         // TODO: Validate the request
         // https://laravel.com/docs/5.8/validation#quick-writing-the-validation-logic
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'address_line_1' => 'required',
+            'city' => 'required',
+            'postcode' => 'required',
+            'unveiler' => 'required',
+            'date_unveiled' => 'required',
+            'sponsor' => 'required',
+        ]);
 
         // TODO: Store the Plaque record in the database.
         // https://laravel.com/docs/5.8/eloquent#inserting-and-updating-models
-
+        {
+            $plaques = new Plaque;
+    
+            $plaques->name = $request->name;
+            $plaques->address_line_1 = $request->address_line_1;
+            $plaques->city = $request->city;
+            $plaques->postcode = $request->postcode;
+            $plaques->unveiler = $request->unveiler;
+            $plaques->date_unveiled = $request->date_unveiled;
+            $plaques->sponsor = $request->sponsor;
+    
+            $plaques->save();
+         }
         // TODO: Return a JSON response of the Plaque.
         // https://laravel.com/docs/5.8/eloquent-resources#writing-resources
+        return new Plaque($plaques);
     }
 
     /**
